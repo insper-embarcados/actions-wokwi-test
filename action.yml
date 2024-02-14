@@ -3,6 +3,10 @@ desciption: 'Wokwi test for insper embedded system course'
 author: 'rafaelcorsi'
 
 inputs:
+  token:
+    description: 'Wokiwi token'
+    required: true
+
   test_name:
     description: 'Test name'
     required: true
@@ -14,31 +18,21 @@ runs:
       with:
         python-version: "3.8"
 
-      - name: Install python
-        run: |
+    - name: Install python
+      shell: bash
+      run: |
           python -m pip install --upgrade pip
           pip install pytest toml
 
-      - name: Install wokwi-cli
-        run: |
-          wget -q -O /usr/local/bin/wokwi-cli https://github.com/rafaelcorsi/wokwi-cli/releases/latest/download/wokwi-cli-linuxstatic-x64
-          chmod +x /usr/local/bin/wokwi-cli
+    - name: Install wokwi-cli
+      shell: bash
+      run: |
+        wget -q -O /usr/local/bin/wokwi-cli https://github.com/rafaelcorsi/wokwi-cli/releases/latest/download/wokwi-cli-linuxstatic-x64
+        chmod +x /usr/local/bin/wokwi-cli
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-folder
-          path: build
-
-      - name: Run test
-        env:
-          WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
-        run:
-          pytest test.py -ks exe1
-
-      - name: Run test
-        env:
-          WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
-
-        run: |
-          pytest test.py -ks "${{ inputs.test_name }}"
+    - name: Run test
+      shell: bash
+      env:
+        WOKWI_CLI_TOKEN: ${{ inputs.token}}
+      run: |
+        pytest /home/runner/work/_actions/insper-embarcados/actions-wokwi-test/v1/test.py -s --name "${{ inputs.test_name }}"
