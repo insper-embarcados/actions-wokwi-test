@@ -57,7 +57,9 @@ def run_test(name):
     command = "wokwi-cli --timeout 5000 --scenario test.yaml"
     process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, text=True)
     os.chdir("..")
-    return process.returncode
+    if process.returncode != 0:
+        return 1
+    return 0
 
 
 def test_code(name):
