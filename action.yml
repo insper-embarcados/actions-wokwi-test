@@ -35,4 +35,4 @@ runs:
       env:
         WOKWI_CLI_TOKEN: ${{ inputs.token}}
       run: |
-        pytest /home/runner/work/_actions/insper-embarcados/actions-wokwi-test/v1/test.py -s --name "${{ inputs.test_name }}"
+        pytest /home/runner/work/_actions/insper-embarcados/actions-wokwi-test/v2/test.py -s --name "${{ inputs.test_name }}"
