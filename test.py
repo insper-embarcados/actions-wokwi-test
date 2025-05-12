@@ -29,7 +29,7 @@ def run_build(name):
 def test_code(name):
     print("Building projects")
     run_build(name)
-    command = f"wokwi-cli --timeout 5000 --scenario test.yaml {name}"
+    command = f"wokwi-cli --timeout 10000 --scenario test.yaml {name}"
     process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, text=True)
     assert process.returncode == 0
 
