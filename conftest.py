@@ -5,6 +5,7 @@ import pytest
 
 def pytest_addoption(parser):
     parser.addoption("--name", action="store")
+    parser.addoption("--timeout", action="store")
 
 
 @pytest.fixture(scope="session")
