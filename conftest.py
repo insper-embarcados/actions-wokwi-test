@@ -13,3 +13,8 @@ def name(request):
     if name_value is None:
         pytest.skip()
     return name_value
+
+    timeout_value = request.config.option.timeout
+    if timeout_value is None:
+        timeout_value = 10000
+    return timeout_value

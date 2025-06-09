@@ -11,6 +11,10 @@ inputs:
     description: 'Test name'
     required: true
 
+  time_out:
+    description: 'Time out'
+    default: 10000
+
 runs:
   using: "composite"
   steps:

@@ -48,13 +48,13 @@ def run_build(name):
     os.chdir("..")
 
 
-def run_test(name):
+def run_test(name, timeout):
     print("Building projects")
     run_build(name)
     gen_wokwi_toml(name)
     copy_files(name)
     os.chdir(test_folder)
-    command = "wokwi-cli --timeout 10000 --scenario test.yaml"
+    command = f"wokwi-cli --timeout {timeout} --scenario test.yaml"
     process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, text=True)
     os.chdir("..")
     if process.returncode != 0:
@@ -62,5 +62,5 @@ def run_test(name):
     return 0
 
 
-def test_code(name):
-    assert run_test(name) == 0
+def test_code(name, timeout):
+    assert run_test(name, timeout) == 0
