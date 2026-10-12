@@ -44,14 +44,22 @@ def run_command(command, cwd=None):
 
 
 def run_build(name):
-    os.makedirs("build", exist_ok=True)
-    if not os.path.isfile("build/Makefile"):
-        run_command("cmake ..", cwd="build")
-    run_command(f"make {name}", cwd="build")
+    firmware = os.path.join("build", name, f"{name}.uf2")
+    elf = os.path.join("build", name, f"{name}.elf")
+    missing = [path for path in (firmware, elf) if not os.path.isfile(path)]
+
+    if missing:
+        raise RuntimeError(
+            "Build artifacts not found. Run insper-embarcados/pico-build before "
+            f"actions-wokwi-test. Missing: {', '.join(missing)}"
+        )
+
+    print(f"Using existing firmware: {firmware}")
+    print(f"Using existing ELF: {elf}")
 
 
 def run_test(name, timeout):
-    print("Building project")
+    print("Checking build artifacts")
     run_build(name)
     gen_wokwi_toml(name)
     copy_files(name)
