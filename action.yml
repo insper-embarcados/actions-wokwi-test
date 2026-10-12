@@ -11,9 +11,9 @@ inputs:
     description: 'Test name'
     required: true
 
-  time_out:
-    description: 'Time out'
-    default: 10000
+  timeout:
+    description: 'Timeout in milliseconds'
+    default: '5000'
 
 runs:
   using: "composite"
@@ -39,4 +39,4 @@ runs:
       env:
         WOKWI_CLI_TOKEN: ${{ inputs.token}}
       run: |
-        pytest /home/runner/work/_actions/insper-embarcados/actions-wokwi-test/v3/test.py -s --name "${{ inputs.test_name }}" --timeout "${{inputs.time_out}}"
+        pytest "${{ github.action_path }}/test.py" -s --name "${{ inputs.test_name }}" --timeout "${{ inputs.timeout }}"

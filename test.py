@@ -1,9 +1,9 @@
 import pytest
-import subprocess
-import shutil
 import os
-import toml
+import shutil
 import subprocess
+
+import toml
 
 test_folder = ".test"
 
@@ -25,40 +25,39 @@ def gen_wokwi_toml(exe_name):
         toml.dump(data, toml_file)
 
 
-def run_build(name):
-    if not os.path.isdir("build"):
-        os.makedirs("build", exist_ok=True)
-        os.chdir("build")
-        subprocess.run(
-            "cmake ..",
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-    else:
-        os.chdir("build")
-    subprocess.run(
-        f"make {name}",
+def run_command(command, cwd=None):
+    print(f"$ {command}")
+    result = subprocess.run(
+        command,
         shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        cwd=cwd,
         text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
     )
-    os.chdir("..")
+
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+
+    if result.returncode != 0:
+        raise RuntimeError(f"Command failed with exit code {result.returncode}: {command}")
+
+
+def run_build(name):
+    os.makedirs("build", exist_ok=True)
+    if not os.path.isfile("build/Makefile"):
+        run_command("cmake ..", cwd="build")
+    run_command(f"make {name}", cwd="build")
 
 
 def run_test(name, timeout):
-    print("Building projects")
+    print("Building project")
     run_build(name)
     gen_wokwi_toml(name)
     copy_files(name)
-    os.chdir(test_folder)
-    command = f"wokwi-cli --timeout {timeout} --scenario test.yaml"
-    process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, text=True)
-    os.chdir("..")
-    if process.returncode != 0:
-        return 1
+
+    print("Running Wokwi scenario")
+    run_command(f"wokwi-cli --timeout {timeout} --scenario test.yaml", cwd=test_folder)
     return 0
 
 
