@@ -12,13 +12,27 @@ def copy_files(exe_name):
     shutil.copyfile(f"{exe_name}/diagram.json", f"{test_folder}/diagram.json")
     shutil.copyfile(f"{exe_name}/test.yaml", f"{test_folder}/test.yaml")
 
+    chips_dir = os.path.join(exe_name, "chips")
+    if os.path.isdir(chips_dir):
+        shutil.copytree(chips_dir, os.path.join(test_folder, "chips"), dirs_exist_ok=True)
+
 
 def gen_wokwi_toml(exe_name):
     base_path = os.path.join("..", "build", exe_name)
     firmware_path = os.path.join(base_path, f"{exe_name}.uf2")
     elf_path = os.path.join(base_path, f"{exe_name}.elf")
 
-    data = {"wokwi": {"version": 1, "firmware": firmware_path, "elf": elf_path}}
+    source_toml_path = os.path.join(exe_name, "wokwi.toml")
+    if os.path.isfile(source_toml_path):
+        with open(source_toml_path, "r") as source_toml:
+            data = toml.load(source_toml)
+    else:
+        data = {"wokwi": {"version": 1}}
+
+    data.setdefault("wokwi", {})
+    data["wokwi"]["version"] = 1
+    data["wokwi"]["firmware"] = firmware_path
+    data["wokwi"]["elf"] = elf_path
     os.makedirs(test_folder, exist_ok=True)
     toml_file_path = os.path.join(test_folder, "wokwi.toml")
     with open(toml_file_path, "w") as toml_file:
